@@ -5,6 +5,7 @@ double price[3]={3.50, 0.50, 6.00};//价格数组
 int number[3]={0};//数量数组//通过数组实现了对多个变量的操控
 int id=0;
 int sign=1;//sign为1表示增加，-1表示减少,由此避开定义两个函数的麻烦
+int sale=0;
 char password[6]={0};
 char name[3][10]={"Cola", "Lollipop", "Noodles"};//商品名称数组
   void item(int a){
@@ -39,7 +40,9 @@ char name[3][10]={"Cola", "Lollipop", "Noodles"};//商品名称数组
 int main(void)
  
 
-{
+{   
+    FILE *fp=fopen("sales.txt","a");//打开文件
+    fprintf(fp, "New sale:\n\n");
    printf("Welcome to the Pos-system!\nPlease enter the password:\n");
    while(1){
     scanf("%5s", password);
@@ -91,21 +94,52 @@ int main(void)
             printf("Noodles   003        %.2f\n", price[2]);
         }
         //表格打印
-        else if (strcmp(input,"print") == 0)
+        else if (strcmp(input,"print") == 0&&(number[0] > 0 || number[1] > 0 || number[2] > 0))
         {   print_bill();
+        }
+        else if(strcmp(input,"print") == 0&&(number[0] == 0 && number[1] == 0 && number[2] == 0))
+        {
+            printf("Error: No items to print\n");
         }
         //打印小票
         else if(strcmp(input,"drop") == 0) 
         {clear_item();
         }
-        else if(strcmp(input,"checkout") == 0)
+        else if(strcmp(input,"checkout") == 0&&(number[0] > 0 || number[1] > 0 || number[2] > 0))
         {printf("Receipt:\n");
             printf("Item       Pri. Qty Amount\n");
          printf("--------------------------\n");
           print_bill();
+          fprintf(fp, "No.     Items        Amount\n");
+          sale++;
+           fprintf(fp,"%d",sale); 
+            if(number[0] > 0)
+            fprintf(fp,"       %-10s   %.2f\n", name[0], price[0]*number[0]);
+            if(number[1] > 0)
+            fprintf(fp,"        %-10s   %.2f\n", name[1], price[1]*number[1]);
+            if(number[2] > 0)
+            fprintf(fp,"        %-10s   %.2f\n", name[2], price[2]*number[2]);
+            fprintf(fp,"--------------------------\n");
+            fprintf(fp,"Total:               %.2f\n\n", price[0]*number[0]+price[1]*number[1]+price[2]*number[2]);
             clear_item();
+    }
+         else if(strcmp(input,"checkout") == 0&&(number[0] == 0 && number[1] == 0 && number[2] == 0))
+        {
+            printf("Error: No items to checkout\n");
         }
+        else if(strcmp(input, "sales") == 0) {
+        fp = fopen("sales.txt", "r");
+        
+        char line[200];
+        printf("Sales Records:\n");
+        while (fgets(line, sizeof(line), fp) != NULL)
+         {
+            printf("%s", line);
+         fclose(fp);
+    }
+}
         else printf("Error: Invalid input\n");//无效指令
       } 
+      fclose(fp);
       return 0;
 } 
