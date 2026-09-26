@@ -40,9 +40,9 @@ char name[3][10]={"Cola", "Lollipop", "Noodles"};//商品名称数组
 int main(void)
  
 
-{   
-    FILE *fp=fopen("sales.txt","a");//打开文件
+{   FILE *fp=fopen("sales.txt","a");
     fprintf(fp, "New sale:\n\n");
+    fclose(fp);
    printf("Welcome to the Pos-system!\nPlease enter the password:\n");
    while(1){
     scanf("%5s", password);
@@ -110,7 +110,8 @@ int main(void)
             printf("Item       Pri. Qty Amount\n");
          printf("--------------------------\n");
           print_bill();
-          fprintf(fp, "No.     Items        Amount\n");
+           fp=fopen("sales.txt","a");
+           fprintf(fp, "No.     Items        Amount\n");
           sale++;
            fprintf(fp,"%d",sale); 
             if(number[0] > 0)
@@ -122,6 +123,7 @@ int main(void)
             fprintf(fp,"--------------------------\n");
             fprintf(fp,"Total:               %.2f\n\n", price[0]*number[0]+price[1]*number[1]+price[2]*number[2]);
             clear_item();
+            fclose(fp);
     }
          else if(strcmp(input,"checkout") == 0&&(number[0] == 0 && number[1] == 0 && number[2] == 0))
         {
@@ -129,17 +131,16 @@ int main(void)
         }
         else if(strcmp(input, "sales") == 0) {
         fp = fopen("sales.txt", "r");
-        
         char line[200];
         printf("Sales Records:\n");
         while (fgets(line, sizeof(line), fp) != NULL)
          {
-            printf("%s", line);
-         fclose(fp);
+            printf("%s", line);  
     }
+   fclose(fp);
 }
         else printf("Error: Invalid input\n");//无效指令
       } 
-      fclose(fp);
+      
       return 0;
 } 
