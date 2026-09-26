@@ -43,23 +43,8 @@ int main(void)
 {   FILE *fp=fopen("sales.txt","a");
     fprintf(fp, "New sale:\n\n");
     fclose(fp);
-   printf("Welcome to the Pos-system!\nPlease enter the password:\n");
-   while(1){
-    scanf("%5s", password);
-    clear_input();
-   if(strcmp(password, "1037") == 0)
-    {
-    printf("Password correct!\nPlease enter the command:\n");
-    break;
-    }
-    else
-    {   
-        printf("Error: Incorrect password\nPlease enter the password again:\n");
-    }
-   }
-   //密码系统
-
-     while(1)
+   printf("Welcome to the Pos-system!\n");
+    while(1)
     {   sign=1; 
         scanf("%10s", input);
         clear_input(); 
@@ -68,7 +53,7 @@ int main(void)
             break;
         }
         //退出指令
-        if(input[0]=='-')
+        else if(input[0]=='-')
         {sign = -1;
             if(input[1] == '0' && input[2] == '0' && strlen(input) == 4)//讨论输入形式为-00x
             {if(input[3] >= '1' && input[3] <= '3')
@@ -86,14 +71,6 @@ int main(void)
             }
             else printf("Error: Item not found\n");}
         //记录商品
-        else if(strcmp(input,"prices") == 0)//考虑输入的是其他指令
-        {   printf("Item      No.        Pri.\n");
-            printf("----------------------------\n");
-            printf("Cola      001        %.2f\n", price[0]);
-            printf("Lollipop  002        %.2f\n", price[1]);
-            printf("Noodles   003        %.2f\n", price[2]);
-        }
-        //表格打印
         else if (strcmp(input,"print") == 0&&(number[0] > 0 || number[1] > 0 || number[2] > 0))
         {   print_bill();
         }
@@ -139,7 +116,65 @@ int main(void)
     }
    fclose(fp);
 }
-        else printf("Error: Invalid input\n");//无效指令
+else if (strcmp(input,"admin") == 0)
+{
+    printf("Please enter admin password:\n");
+    while(1)
+    {
+        scanf("%5s", password);
+        clear_input();
+        if(strcmp(password,"exit") == 0 || strcmp(password,"quit") == 0)
+        {
+            printf("Exiting admin mode.\n");
+            break;   // 退出密码循环
+        }
+        if(strcmp(password, "1037") != 0)
+        {
+            printf("Error: Incorrect password. Try again or type exit/quit:\n");
+            continue;//继续回到输密码界面
+        }
+        // 密码正确，进入管理员模式
+        printf("Admin mode. Commands: setprice, back,prices\n");
+        char command[20];
+        while(1)
+        {
+            scanf("%19s", command);
+            clear_input();
+            if(strcmp(command, "back") == 0)
+            {
+                printf("Returning to main menu.\n");
+                break;   // 跳出管理员命令循环
+            }
+            else if(strcmp(command, "setprice") == 0)//此处做了个小改动，要先输setprice指令，再改动价格
+            {
+                char barcode[10];
+                double new_price;
+                printf("Please enter <barcode> <new_price> to change the price\n such as\"001 3.00\"\n");
+                scanf("%9s %lf", barcode, &new_price);
+                clear_input();
+                if(strcmp(barcode, "001") == 0) price[0] = new_price;
+                else if(strcmp(barcode, "002") == 0) price[1] = new_price;
+                else if(strcmp(barcode, "003") == 0) price[2] = new_price;
+                else printf("Unknown barcode.\n");
+                printf("Price updated.\n");
+            }
+            else if(strcmp(command,"prices") == 0)//考虑输入的是其他指令
+        {   printf("Item      No.        Pri.\n");
+            printf("----------------------------\n");
+            printf("Cola      001        %.2f\n", price[0]);
+            printf("Lollipop  002        %.2f\n", price[1]);
+            printf("Noodles   003        %.2f\n", price[2]);
+        }
+        //表格打印
+            else
+            {
+                printf("Unknown admin command. Use setprice or back.\n");
+            }
+        }
+        break;   // 退出密码循环，回到主菜单
+    }
+}
+            else printf("Error: Invalid input\n");//指令无效
       } 
       
       return 0;
